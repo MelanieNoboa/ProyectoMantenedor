@@ -1,0 +1,256 @@
+-- ==========================================
+-- 1. CREACIÓN DE LA BASE DE DATOS
+-- ==========================================
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'BD_GestionHospitalaria')
+BEGIN
+   CREATE DATABASE BD_GestionHospitalaria;
+END
+GO
+
+USE BD_GestionHospitalaria;
+GO
+
+-- ==========================================
+-- 2. ELIMINACIÓN DE TABLAS PREVIAS (ORDEN DE DEPENDENCIAS)
+-- ==========================================
+
+-- Primero se elimina la tabla dependiente (Paciente tiene FK hacia Especialista)
+IF OBJECT_ID('dbo.Paciente', 'U') IS NOT NULL
+   DROP TABLE dbo.Paciente;
+GO
+
+-- Luego se elimina la tabla principal
+IF OBJECT_ID('dbo.Especialista', 'U') IS NOT NULL
+   DROP TABLE dbo.Especialista;
+GO
+
+-- Finalmente la tabla independiente
+IF OBJECT_ID('dbo.LogAuditoria', 'U') IS NOT NULL
+   DROP TABLE dbo.LogAuditoria;
+GO
+
+-- ==========================================
+-- 3. CREACIÓN DE TABLAS
+-- ==========================================
+
+-- Tabla: Especialistas / Tipos de Especialidad
+CREATE TABLE dbo.Especialista (
+   especialistaID INT IDENTITY(1,1) PRIMARY KEY,
+   rut VARCHAR(12) NOT NULL,
+   nombre VARCHAR(50) NOT NULL,
+   apellido VARCHAR(50) NOT NULL,
+   especialidad VARCHAR(50) NOT NULL,
+   telefono VARCHAR(20) NULL,
+   email VARCHAR(100) NULL,
+   estado BIT NOT NULL DEFAULT 1 -- 1: Activo, 0: Inactivo
+);
+GO
+
+-- Tabla: Registro de Pacientes
+CREATE TABLE dbo.Paciente (
+   pacienteID INT IDENTITY(1,1) PRIMARY KEY,
+   rut VARCHAR(12) NOT NULL UNIQUE,
+   nombre VARCHAR(50) NOT NULL,
+   apellido VARCHAR(50) NOT NULL,
+   fechaNacimiento DATE NOT NULL,
+   telefono VARCHAR(20) NULL,
+   email VARCHAR(100) NULL,
+   especialistaAsignadoID INT NOT NULL,
+   estado BIT NOT NULL DEFAULT 1, -- 1: Activo, 0: Inactivo (Borrado Lógico)
+   CONSTRAINT FK_Paciente_Especialista FOREIGN KEY (especialistaAsignadoID) 
+       REFERENCES dbo.Especialista(especialistaID)
+);
+GO
+
+-- Tabla: Log / Auditoría
+CREATE TABLE dbo.LogAuditoria (
+   logID INT IDENTITY(1,1) PRIMARY KEY,
+   tablaAfectada VARCHAR(50) NOT NULL,
+   operacion VARCHAR(20) NOT NULL, -- INSERT, UPDATE, DELETE
+   usuario VARCHAR(100) NOT NULL,
+   fecha DATETIME NOT NULL DEFAULT GETDATE(),
+   detalle VARCHAR(MAX) NULL
+);
+GO
+
+-- ==========================================
+-- 4. STORED PROCEDURES (SP)
+-- ==========================================
+
+-- SP 1: Crear Registro de Paciente
+IF OBJECT_ID('dbo.sp_CrearPaciente', 'P') IS NOT NULL
+   DROP PROCEDURE dbo.sp_CrearPaciente;
+GO
+
+CREATE PROCEDURE dbo.sp_CrearPaciente
+   @Rut VARCHAR(12),
+   @Nombre VARCHAR(50),
+   @Apellido VARCHAR(50),
+   @FechaNacimiento DATE,
+   @Telefono VARCHAR(20),
+   @Email VARCHAR(100),
+   @EspecialistaAsignadoID INT
+AS
+BEGIN
+   SET NOCOUNT ON;
+
+   INSERT INTO dbo.Paciente (rut, nombre, apellido, fechaNacimiento, telefono, email, especialistaAsignadoID, estado)
+   VALUES (@Rut, @Nombre, @Apellido, @FechaNacimiento, @Telefono, @Email, @EspecialistaAsignadoID, 1);
+END
+GO
+
+-- SP 2: Leer todos los registros (solo pacientes activos)
+IF OBJECT_ID('dbo.sp_LeerPacientesTodos', 'P') IS NOT NULL
+   DROP PROCEDURE dbo.sp_LeerPacientesTodos;
+GO
+
+CREATE PROCEDURE dbo.sp_LeerPacientesTodos
+AS
+BEGIN
+   SET NOCOUNT ON;
+
+   SELECT 
+       p.pacienteID,
+       p.rut,
+       p.nombre,
+       p.apellido,
+       p.fechaNacimiento,
+       p.telefono,
+       p.email,
+       p.especialistaAsignadoID,
+       CONCAT(e.nombre, ' ', e.apellido, ' (', e.especialidad, ')') AS Especialista,
+       p.estado
+   FROM dbo.Paciente p
+   INNER JOIN dbo.Especialista e ON p.especialistaAsignadoID = e.especialistaID
+   WHERE p.estado = 1;
+END
+GO
+
+-- SP 3: Leer por tipo de especialidad
+IF OBJECT_ID('dbo.sp_LeerPacientesPorEspecialidad', 'P') IS NOT NULL
+   DROP PROCEDURE dbo.sp_LeerPacientesPorEspecialidad;
+GO
+
+CREATE PROCEDURE dbo.sp_LeerPacientesPorEspecialidad
+   @especialistaID INT
+AS
+BEGIN
+   SET NOCOUNT ON;
+
+   SELECT 
+       p.pacienteID,
+       p.rut,
+       p.nombre,
+       p.apellido,
+       p.fechaNacimiento,
+       p.telefono,
+       p.email,
+       e.especialidad,
+       CONCAT(e.nombre, ' ', e.apellido) AS Especialista
+   FROM dbo.Paciente p
+   INNER JOIN dbo.Especialista e ON p.especialistaAsignadoID = e.especialistaID
+   WHERE p.estado = 1 AND e.especialidad = @especialistaID;
+END
+GO
+
+-- SP 4: Actualizar Registro
+IF OBJECT_ID('dbo.sp_ActualizarPaciente', 'P') IS NOT NULL
+   DROP PROCEDURE dbo.sp_ActualizarPaciente;
+GO
+
+CREATE PROCEDURE dbo.sp_ActualizarPaciente
+   @PacienteID INT,
+   @Telefono VARCHAR(20),
+   @Email VARCHAR(100),
+   @EspecialistaAsignadoID INT
+
+   
+AS
+BEGIN
+   SET NOCOUNT ON;
+
+   UPDATE dbo.Paciente
+   SET telefono = @Telefono,
+       email = @Email,
+       especialistaAsignadoID = @EspecialistaAsignadoID
+   WHERE pacienteID = @PacienteID;
+END
+GO
+
+-- SP 5: Eliminar (Cambiar de estado / Borrado lógico)
+IF OBJECT_ID('dbo.sp_EliminarPaciente', 'P') IS NOT NULL
+   DROP PROCEDURE dbo.sp_EliminarPaciente;
+GO
+
+CREATE PROCEDURE dbo.sp_EliminarPaciente
+   @PacienteID INT
+AS
+BEGIN
+   SET NOCOUNT ON;
+
+   UPDATE dbo.Paciente
+   SET estado = 0
+   WHERE pacienteID = @PacienteID;
+END
+GO
+
+-- ==========================================
+-- 5. AUDITORÍA (TRIGGER CUD)
+-- ==========================================
+
+IF OBJECT_ID('dbo.trg_Auditoria_Paciente', 'TR') IS NOT NULL
+   DROP TRIGGER dbo.trg_Auditoria_Paciente;
+GO
+
+CREATE TRIGGER dbo.trg_Auditoria_Paciente
+ON dbo.Paciente
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+   SET NOCOUNT ON;
+
+   DECLARE @Usuario VARCHAR(100) = SYSTEM_USER;
+
+   -- Operación INSERT
+   IF EXISTS (SELECT * FROM inserted) AND NOT EXISTS (SELECT * FROM deleted)
+   BEGIN
+       INSERT INTO dbo.LogAuditoria (tablaAfectada, operacion, usuario, fecha, detalle)
+       SELECT 
+           'Paciente',
+           'INSERT',
+           @Usuario,
+           GETDATE(),
+           CONCAT('Paciente Creado - ID: ', i.pacienteID, ', RUT: ', i.rut, ', Nombre: ', i.nombre, ' ', i.apellido)
+       FROM inserted i;
+   END
+
+   -- Operación UPDATE
+   IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+   BEGIN
+       INSERT INTO dbo.LogAuditoria (tablaAfectada, operacion, usuario, fecha, detalle)
+       SELECT 
+           'Paciente',
+           'UPDATE',
+           @Usuario,
+           GETDATE(),
+           CONCAT('Paciente Modificado - ID: ', i.pacienteID, 
+                  ' | Estado anterior: ', d.estado, ', Estado nuevo: ', i.estado,
+                  ' | Especialista anterior ID: ', d.especialistaAsignadoID, ', Especialista nuevo ID: ', i.especialistaAsignadoID)
+       FROM inserted i
+       INNER JOIN deleted d ON i.pacienteID = d.pacienteID;
+   END
+
+   -- Operación DELETE (Eliminación física)
+   IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+   BEGIN
+       INSERT INTO dbo.LogAuditoria (tablaAfectada, operacion, usuario, fecha, detalle)
+       SELECT 
+           'Paciente',
+           'DELETE',
+           @Usuario,
+           GETDATE(),
+           CONCAT('Paciente Eliminado Físicamente - ID: ', d.pacienteID, ', RUT: ', d.rut)
+       FROM deleted d;
+   END
+END
+GO
