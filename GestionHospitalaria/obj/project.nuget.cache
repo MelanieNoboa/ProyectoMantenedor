@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "C05NysqYS4U=",
+  "dgSpecHash": "/wbUPJjR7Mg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Laboratorio_Sj\\Desktop\\repos\\GestionHospitalaria\\GestionHospitalaria.csproj",
+  "projectFilePath": "C:\\Users\\Laboratorio_Sj\\Desktop\\repos\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Laboratorio_Sj\\.nuget\\packages\\microsoft.bcl.cryptography\\9.0.18\\microsoft.bcl.cryptography.9.0.18.nupkg.sha512",
     "C:\\Users\\Laboratorio_Sj\\.nuget\\packages\\microsoft.data.sqlclient\\7.1.0\\microsoft.data.sqlclient.7.1.0.nupkg.sha512",

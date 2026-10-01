@@ -1229,11 +1229,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Laboratorio_Sj\\Desktop\\repos\\GestionHospitalaria\\GestionHospitalaria.csproj",
+      "projectUniqueName": "C:\\Users\\Laboratorio_Sj\\Desktop\\repos\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj",
       "projectName": "GestionHospitalaria",
-      "projectPath": "C:\\Users\\Laboratorio_Sj\\Desktop\\repos\\GestionHospitalaria\\GestionHospitalaria.csproj",
+      "projectPath": "C:\\Users\\Laboratorio_Sj\\Desktop\\repos\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj",
       "packagesPath": "C:\\Users\\Laboratorio_Sj\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Laboratorio_Sj\\Desktop\\repos\\GestionHospitalaria\\obj\\",
+      "outputPath": "C:\\Users\\Laboratorio_Sj\\Desktop\\repos\\ProyectoMantenedor\\GestionHospitalaria\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
