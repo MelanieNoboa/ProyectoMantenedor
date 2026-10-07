@@ -129,7 +129,7 @@ namespace GestionHospitalaria.Datos
                 using (SqlCommand cmd = new SqlCommand("dbo.sp_LeerPacientesPorEspecialidad", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Especialidad", especialistaID);
+                    cmd.Parameters.AddWithValue("@@especialistaID", especialistaID);
 
                     con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())

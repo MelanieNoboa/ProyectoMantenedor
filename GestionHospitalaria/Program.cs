@@ -1,16 +1,22 @@
-namespace GestionHospitalaria;
+using System;
+using System.Windows.Forms;
+using GestionHospitalaria.Presentacion; // Permite acceder a FrmPacientes dentro de la carpeta Presentacion
 
-static class Program
+namespace GestionHospitalaria
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
-    [STAThread]
-    static void Main()
+    internal static class Program
     {
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
-        ApplicationConfiguration.Initialize();
-        Application.Run(new Form1());
-    }    
+        /// <summary>
+        /// Punto de entrada principal para la aplicación.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            // Inicializa las configuraciones de la aplicación (escalado DPI, estilos visuales, etc.)
+            ApplicationConfiguration.Initialize();
+
+            // Inicia la aplicación cargando FrmPacientes como el formulario principal
+            Application.Run(new FrmPacientes());
+        }
+    }
 }

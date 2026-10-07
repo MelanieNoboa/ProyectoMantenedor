@@ -254,3 +254,34 @@ BEGIN
    END
 END
 GO
+--Inserts
+USE BD_GestionHospitalaria;
+GO
+
+-- 1. INSERT EN TABLA: Especialista
+INSERT INTO dbo.Especialista (rut, nombre, apellido, especialidad, telefono, email, estado)
+VALUES 
+('11111111-1', 'Carlos', 'Mendoza', 'Cardiología', '+56912345678', 'carlos.mendoza@hospital.cl', 1),
+('22222222-2', 'María', 'González', 'Pediatría', '+56987654321', 'maria.gonzalez@hospital.cl', 1),
+('33333333-3', 'Roberto', 'Soto', 'Neurología', '+56911223344', 'roberto.soto@hospital.cl', 1),
+('44444444-4', 'Ana', 'Rojas', 'Dermatología', '+56955667788', 'ana.rojas@hospital.cl', 1);
+GO
+
+-- 2. INSERT EN TABLA: Paciente
+-- (especialistaAsignadoID hace referencia a los especialistaID 1, 2, 3 y 4 creados previamente)
+INSERT INTO dbo.Paciente (rut, nombre, apellido, fechaNacimiento, telefono, email, especialistaAsignadoID, estado)
+VALUES 
+('15678901-2', 'Juan', 'Pérez', '1985-04-12', '+56922334455', 'juan.perez@email.com', 1, 1),
+('16789012-3', 'Camila', 'Silva', '1992-08-25', '+56933445566', 'camila.silva@email.com', 2, 1),
+('17890123-4', 'Diego', 'Morales', '1978-11-03', '+56944556677', 'diego.morales@email.com', 1, 1),
+('18901234-5', 'Sofia', 'Castro', '2001-01-15', '+56955667788', 'sofia.castro@email.com', 3, 1),
+('19012345-6', 'Lucas', 'Fernández', '1996-06-30', '+56966778899', 'lucas.fernandez@email.com', 4, 1);
+GO
+
+-- 3. INSERT EN TABLA: LogAuditoria
+INSERT INTO dbo.LogAuditoria (tablaAfectada, operacion, usuario, fecha, detalle)
+VALUES 
+('Especialista', 'INSERT', 'SYSTEM_ADMIN', GETDATE(), 'Carga inicial de 4 especialistas en el sistema.'),
+('Paciente', 'INSERT', 'SYSTEM_ADMIN', GETDATE(), 'Carga inicial de 5 pacientes asignados a sus respectivos especialistas.');
+GO
+
