@@ -285,3 +285,60 @@ VALUES
 ('Paciente', 'INSERT', 'SYSTEM_ADMIN', GETDATE(), 'Carga inicial de 5 pacientes asignados a sus respectivos especialistas.');
 GO
 
+
+
+
+USE BD_GestionHospitalaria;
+GO
+
+-- Si el trigger ya existe, lo eliminamos para crearlo limpio
+IF OBJECT_ID('dbo.trg_Auditoria_Paciente_CU', 'TR') IS NOT NULL
+    DROP TRIGGER dbo.trg_Auditoria_Paciente_CU;
+GO
+
+CREATE TRIGGER dbo.trg_Auditoria_Paciente_CU
+ON dbo.Paciente
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Usuario VARCHAR(100) = SYSTEM_USER;
+
+    -- 1. TRIGGER PARA CREAR (INSERT)
+    IF EXISTS (SELECT * FROM inserted) AND NOT EXISTS (SELECT * FROM deleted)
+    BEGIN
+        INSERT INTO dbo.LogAuditoria (tablaAfectada, operacion, usuario, fecha, detalle)
+        SELECT 
+            'Paciente',
+            'INSERT',
+            @Usuario,
+            GETDATE(),
+            CONCAT('Paciente Creado - ID: ', i.pacienteID, 
+                   ' | RUT: ', i.rut, 
+                   ' | Nombre: ', i.nombre, ' ', i.apellido, 
+                   ' | Teléfono: ', ISNULL(i.telefono, 'N/A'), 
+                   ' | Email: ', ISNULL(i.email, 'N/A'), 
+                   ' | Especialista ID: ', i.especialistaAsignadoID)
+        FROM inserted i;
+    END
+
+    -- 2. TRIGGER PARA ACTUALIZAR (UPDATE)
+    IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+    BEGIN
+        INSERT INTO dbo.LogAuditoria (tablaAfectada, operacion, usuario, fecha, detalle)
+        SELECT 
+            'Paciente',
+            'UPDATE',
+            @Usuario,
+            GETDATE(),
+            CONCAT('Paciente Modificado - ID: ', i.pacienteID, ' (', i.rut, ')',
+                   ' | Teléfono ant: ', ISNULL(d.telefono, 'N/A'), ' -> nuevo: ', ISNULL(i.telefono, 'N/A'),
+                   ' | Email ant: ', ISNULL(d.email, 'N/A'), ' -> nuevo: ', ISNULL(i.email, 'N/A'),
+                   ' | Especialista ant ID: ', d.especialistaAsignadoID, ' -> nuevo ID: ', i.especialistaAsignadoID,
+                   ' | Estado ant: ', d.estado, ' -> nuevo: ', i.estado)
+        FROM inserted i
+        INNER JOIN deleted d ON i.pacienteID = d.pacienteID;
+    END
+END
+GO

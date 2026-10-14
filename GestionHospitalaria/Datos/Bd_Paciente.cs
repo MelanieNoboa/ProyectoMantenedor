@@ -173,7 +173,8 @@ namespace GestionHospitalaria.Datos
                     cmd.Parameters.AddWithValue("@EspecialistaAsignadoID", paciente.especialistaAsignadoID);
 
                     con.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    return cmd.ExecuteNonQuery() ;
+                    return true; 
                 }
             }
         }
@@ -192,7 +193,8 @@ namespace GestionHospitalaria.Datos
                     cmd.Parameters.AddWithValue("@EspecialistaAsignadoID", paciente.especialistaAsignadoID);
 
                     con.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    return cmd.ExecuteNonQuery() ;
+                    return true; 
                 }
             }
         }
@@ -208,7 +210,8 @@ namespace GestionHospitalaria.Datos
                     cmd.Parameters.AddWithValue("@PacienteID", pacienteID);
 
                     con.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    return cmd.ExecuteNonQuery() ;
+                    return true; 
                 }
             }
         }
