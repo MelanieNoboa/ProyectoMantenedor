@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\msnob\\OneDrive\\Escritorio\\docs\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj": {}
+    "C:\\Users\\msnob\\OneDrive\\Escritorio\\REpos\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj": {}
   },
   "projects": {
-    "C:\\Users\\msnob\\OneDrive\\Escritorio\\docs\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj": {
+    "C:\\Users\\msnob\\OneDrive\\Escritorio\\REpos\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\msnob\\OneDrive\\Escritorio\\docs\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj",
+        "projectUniqueName": "C:\\Users\\msnob\\OneDrive\\Escritorio\\REpos\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj",
         "projectName": "GestionHospitalaria",
-        "projectPath": "C:\\Users\\msnob\\OneDrive\\Escritorio\\docs\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj",
+        "projectPath": "C:\\Users\\msnob\\OneDrive\\Escritorio\\REpos\\ProyectoMantenedor\\GestionHospitalaria\\GestionHospitalaria.csproj",
         "packagesPath": "C:\\Users\\msnob\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\msnob\\OneDrive\\Escritorio\\docs\\ProyectoMantenedor\\GestionHospitalaria\\obj\\",
+        "outputPath": "C:\\Users\\msnob\\OneDrive\\Escritorio\\REpos\\ProyectoMantenedor\\GestionHospitalaria\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\msnob\\AppData\\Roaming\\NuGet\\NuGet.Config"
