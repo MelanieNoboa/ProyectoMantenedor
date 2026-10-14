@@ -84,17 +84,17 @@ namespace GestionHospitalaria.Datos
             return lista;
         }
 
-        // 2. Obtener lista de especialistas
+        // 2. Obtener lista de especialistas usando Stored Procedure
         public List<Especialista> ObtenerEspecialistas()
         {
             List<Especialista> lista = new List<Especialista>();
 
             using (SqlConnection con = Conexion.ObtenerConexion())
             {
-                string query = "SELECT especialistaID, rut, nombre, apellido, especialidad, telefono, email, estado FROM dbo.Especialista WHERE estado = 1";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("dbo.sp_ObtenerEspecialistas", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
                     con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -119,8 +119,8 @@ namespace GestionHospitalaria.Datos
             return lista;
         }
 
-        // 3. Obtener pacientes por especialidad
-        public List<Paciente> ObtenerPacientesPorEspecialidad(int especialistaID )
+        // 3. Obtener pacientes por especialista
+        public List<Paciente> ObtenerPacientesPorEspecialidad(int especialistaID)
         {
             List<Paciente> lista = new List<Paciente>();
 
@@ -129,7 +129,7 @@ namespace GestionHospitalaria.Datos
                 using (SqlCommand cmd = new SqlCommand("dbo.sp_LeerPacientesPorEspecialidad", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@@especialistaID", especialistaID);
+                    cmd.Parameters.AddWithValue("@EspecialistaID", especialistaID);
 
                     con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -144,7 +144,9 @@ namespace GestionHospitalaria.Datos
                                 apellido = reader["apellido"].ToString() ?? string.Empty,
                                 fechaNacimiento = Convert.ToDateTime(reader["fechaNacimiento"]),
                                 telefono = reader["telefono"]?.ToString() ?? string.Empty,
-                                email = reader["email"]?.ToString() ?? string.Empty
+                                email = reader["email"]?.ToString() ?? string.Empty,
+                                especialistaAsignadoID = Convert.ToInt32(reader["especialistaAsignadoID"]),
+                                estado = Convert.ToBoolean(reader["estado"])
                             });
                         }
                     }
